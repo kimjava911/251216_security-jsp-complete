@@ -93,13 +93,16 @@ public class MemoController {
             @RequestParam String content,
             Principal principal) {
 
-        boolean success = memoService.updateMemo(id, title, content, principal.getName());
+//        boolean success = memoService.updateMemo(id, title, content, principal.getName());
+//
+//        if (success) {
+//            return "redirect:/memo/" + id;
+//        } else {
+//            return "redirect:/memo";  // 권한 없으면 목록으로
+//        }
 
-        if (success) {
-            return "redirect:/memo/" + id;
-        } else {
-            return "redirect:/memo";  // 권한 없으면 목록으로
-        }
+        memoService.updateMemo(id, title, content, principal.getName());
+        return "redirect:/memo/" + id;
     }
 
     /**

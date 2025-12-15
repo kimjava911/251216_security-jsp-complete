@@ -3,6 +3,7 @@ package kr.java.security.config;
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -11,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity  // Spring Security 활성화
+@EnableMethodSecurity  // 메서드 레벨 보안 활성화 (Spring Security 6)
 public class SecurityConfig {
 
     /**
@@ -55,6 +57,14 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)        // 세션 무효화
                         .deleteCookies("JSESSIONID")        // 세션 쿠키 삭제
                         .permitAll()
+                )
+                // 예외 처리 설정
+                .exceptionHandling(ex -> ex
+                        // 인증되지 않은 사용자가 보호된 리소스 접근 시
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect("/auth/login"))
+                        // 인증은 되었지만 권한이 없을 때
+                        .accessDeniedPage("/error/403")
                 );
 
         return http.build();
