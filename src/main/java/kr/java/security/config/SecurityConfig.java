@@ -29,8 +29,8 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         // 누구나 접근 가능한 경로
                         .requestMatchers("/", "/auth/**", "/css/**", "/js/**").permitAll()
-                        // 로그인 관련
-                        .requestMatchers("/auth/login").permitAll()
+                        // 메모 관련 경로는 로그인 필요
+                        .requestMatchers("/memo/**").authenticated()
                         // 관리자 전용 경로
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         // 그 외 모든 요청은 로그인 필요
