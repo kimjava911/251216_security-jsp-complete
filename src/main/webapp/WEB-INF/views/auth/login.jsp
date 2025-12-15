@@ -42,7 +42,7 @@
     --%>
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
-    <button type="submit">로그인</button>
+    <button>로그인</button>
 </form>
 
 <p><a href="<c:url value="/auth/signup" />">회원가입</a></p>
