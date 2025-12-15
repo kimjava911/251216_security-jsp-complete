@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: 251216_security
+
+  profiles:
+    active: dev
+
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
