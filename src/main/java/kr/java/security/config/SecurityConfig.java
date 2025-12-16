@@ -3,21 +3,12 @@ package kr.java.security.config;
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableWebSecurity  // Spring Security 활성화
@@ -56,8 +47,6 @@ public class SecurityConfig {
                         .passwordParameter("password")      // 폼의 비밀번호 필드명
                         .defaultSuccessUrl("/", true)       // 로그인 성공 시 이동할 페이지
                         .failureUrl("/auth/login?error=true")  // 로그인 실패 시 이동할 페이지
-                        // 로그인 실패 시 커스텀 핸들러 사용 (선택사항)
-                        .failureHandler(authenticationFailureHandler())
                         .permitAll()
                 )
 
@@ -71,18 +60,14 @@ public class SecurityConfig {
                 )
                 // 예외 처리 설정
                 .exceptionHandling(ex -> ex
-//                        // 인증되지 않은 사용자가 보호된 리소스 접근 시
-//                        .authenticationEntryPoint((request, response, authException) ->
-//                                response.sendRedirect("/auth/login"))
+                        // 인증되지 않은 사용자가 보호된 리소스 접근 시
                         .authenticationEntryPoint(authenticationEntryPoint())
-//                        // 인증은 되었지만 권한이 없을 때
-//                        .accessDeniedPage("/error/403")
+                        // 인증은 되었지만 권한이 없을 때
                         .accessDeniedHandler(accessDeniedHandler())
                 );
 
         return http.build();
     }
-
 
     /**
      * AuthenticationEntryPoint - 인증되지 않은 사용자 처리
@@ -147,20 +132,6 @@ public class SecurityConfig {
         };
     }
 
-
-    /**
-     * PasswordEncoder - 비밀번호 암호화/검증 담당
-     *
-     * DelegatingPasswordEncoder: 여러 암호화 방식을 지원하는 "위임" 인코더
-     * - 저장된 비밀번호 앞의 {id} 접두사를 보고 어떤 방식으로 암호화되었는지 판단
-     * - 예: {bcrypt}$2a$10$... → BCrypt로 암호화됨
-     * - 예: {noop}plaintext → 암호화 없음 (테스트용)
-     *
-     * 기본 암호화 방식: BCrypt (새로 저장하는 비밀번호에 적용)
-     * - 단방향 해시: 원본 비밀번호를 알 수 없음
-     * - Salt 자동 처리: 같은 비밀번호도 매번 다른 결과 생성
-     * - 느린 해시: 무차별 대입 공격(Brute Force)에 강함
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         // 실무 권장 방식: DelegatingPasswordEncoder

@@ -93,18 +93,10 @@ public class MemoController {
     public String update(
             @PathVariable Long id,
             @RequestParam String title,
-            @RequestParam String content,
-            Principal principal) {
+            @RequestParam String content) {
 
-//        boolean success = memoService.updateMemo(id, title, content, principal.getName());
-//
-//        if (success) {
-//            return "redirect:/memo/" + id;
-//        } else {
-//            return "redirect:/memo";  // 권한 없으면 목록으로
-//        }
-
-        memoService.updateMemo(id, title, content, principal.getName());
+        String authorName = memoService.getMemo(id).getAuthor().getUsername();
+        memoService.updateMemo(id, title, content, authorName);
         return "redirect:/memo/" + id;
     }
 
@@ -112,8 +104,9 @@ public class MemoController {
      * 메모 삭제 처리
      */
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, Principal principal) {
-        memoService.deleteMemo(id, principal.getName());
+    public String delete(@PathVariable Long id) {
+        String authorName = memoService.getMemo(id).getAuthor().getUsername();
+        memoService.deleteMemo(id, authorName);
         return "redirect:/memo";
     }
 
