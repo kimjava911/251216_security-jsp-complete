@@ -7,7 +7,16 @@
 <body>
 <h1>403 - 접근이 거부되었습니다</h1>
 
-<p>이 페이지에 접근할 권한이 없습니다.</p>
+<%--<p>이 페이지에 접근할 권한이 없습니다.</p>--%>
+
+<p style="color: red;">${errorMessage}</p>
+
+<sec:authorize access="isAuthenticated()">
+    <p>
+        현재 로그인: <sec:authentication property="name"/><br/>
+        보유 권한: <sec:authentication property="authorities"/>
+    </p>
+</sec:authorize>
 
 <p>
     <a href="<c:url value="/" />">홈으로 돌아가기</a> |
